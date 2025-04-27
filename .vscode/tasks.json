@@ -85,12 +85,7 @@
       "type": "shell",
       "command": "npm",
       "args": [
-        "run",
-        "start",
-        "--",
-        "desktop",
-        "--app",
-        "word"
+        "start"
       ],
       "presentation": {
         "clear": true,

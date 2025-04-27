@@ -25,7 +25,7 @@ module.exports = async (env, options) => {
       clean: true,
     },
     resolve: {
-      extensions: [".ts", ".html", ".js"],
+      extensions: [".ts", ".html", ".js", ".txt"],
     },
     module: {
       rules: [
@@ -40,6 +40,10 @@ module.exports = async (env, options) => {
           test: /\.html$/,
           exclude: /node_modules/,
           use: "html-loader",
+        },
+        {
+          test: /\.txt$/,
+          type: "asset/source",
         },
         {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
