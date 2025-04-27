@@ -13,25 +13,55 @@
     <!-- Office JavaScript API -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 
-    <!-- For more information on Fluent UI, visit https://developer.microsoft.com/fluentui#/. -->
-    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.1.0/css/fabric.min.css"/>
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Marked library for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Template styles -->
     <link href="taskpane.css" rel="stylesheet" type="text/css" />
 </head>
 
-<body>
-    <h1>WordLLM2</h1>
-    <textarea id="prompt" rows="4" style="width: 100%; margin: 10px 0;"></textarea>
-    <div style="display: flex; gap: 10px;">
-        <button id="chat">Chat</button>
-        <button id="explain">Explain</button>
-        <button id="translateToEnglish">Translate to English</button>
-        <button id="translateToFrench">Translate to French</button>
-        <button id="enhance">Enhance</button>
-    </div>
-    <div id="response" style="margin-top: 10px;"></div>
+<body class="notion-style">
+    <div class="container">
+        <header>
+            <h1>WordLLM2</h1>
+        </header>
+        
+        <main>
+            <div class="input-section">
+                <textarea id="prompt" placeholder="Type your prompt here..." rows="4"></textarea>
+            </div>
 
+            <div class="button-group">
+                <button id="chat" class="action-button">
+                    <span class="button-icon">💬</span>
+                    <span>Chat</span>
+                </button>
+                <button id="explain" class="action-button">
+                    <span class="button-icon">📚</span>
+                    <span>Explain</span>
+                </button>
+                <button id="translateToEnglish" class="action-button">
+                    <span class="button-icon">🇬🇧</span>
+                    <span>English</span>
+                </button>
+                <button id="translateToFrench" class="action-button">
+                    <span class="button-icon">🇫🇷</span>
+                    <span>French</span>
+                </button>
+                <button id="enhance" class="action-button">
+                    <span class="button-icon">✨</span>
+                    <span>Enhance</span>
+                </button>
+            </div>
+
+            <div id="response" class="response-section markdown-content"></div>
+        </main>
+    </div>
 </body>
 
 </html>

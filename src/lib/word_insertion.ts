@@ -1,4 +1,7 @@
 import { getLLMResponse } from "./llm";
+import { marked } from 'marked';
+
+
 
 async function concatenatePrompt(promptUrl: string, selectedText: string) {
   if (promptUrl === "") {
@@ -25,13 +28,15 @@ export async function askLLM(userText: string, taskPane: boolean = false, prompt
 
             // Get response from LLM
             const llmResponse = await getLLMResponse(fullPrompt);
-            console.log('Received LLM response:', llmResponse);
+            console.log('Received the LLM response:', llmResponse);
 
             // Display the response in the taskpane
             if (taskPane) {
               const responseDiv = document.getElementById('response');
               if (responseDiv) {
-                  responseDiv.textContent = llmResponse;
+                  const parsedMarkdown = await marked.parse(llmResponse);
+                  console.log('Displaying response in taskpane : \n ' + parsedMarkdown);
+                  responseDiv.innerHTML = `<div class="markdown-content">${parsedMarkdown}</div>`;
               }
             } else {
               const selection = context.document.getSelection();
