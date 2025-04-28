@@ -28,7 +28,8 @@ Office.onReady((info) => {
     // Initialize model with saved or default values
     const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
     const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
-    model = initializeModel(baseURL, apiKey);
+    const selectedModel = savedModel || undefined;
+    model = initializeModel(baseURL, apiKey, selectedModel);
 
     // Add event listeners for configuration changes
     document.getElementById("baseURL").addEventListener("change", updateModel);
@@ -84,6 +85,12 @@ function updateModelDropdown(models: string[]) {
     modelSelect.innerHTML = filteredModels.length > 0 
         ? filteredModels.map(model => `<option value="${model}">${model}</option>`).join('')
         : '<option value="">No models found</option>';
+    
+    // If there's only one model after filtering, select it and update the model
+    if (filteredModels.length === 1) {
+        modelSelect.value = filteredModels[0];
+        updateModel();
+    }
 }
 
 function handleModelSearch() {
@@ -103,11 +110,9 @@ function updateModel() {
     const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
     const selectedModel = (document.getElementById("modelSelect") as HTMLSelectElement).value;
     
-    if (selectedModel) {
-        model = initializeModel(baseURL, apiKey, selectedModel);
-    } else {
-        model = initializeModel(baseURL, apiKey);
-    }
+    // Force a new model instance to be created
+    model = initializeModel(baseURL, apiKey, selectedModel);
+    console.log('Model updated to:', selectedModel);
 }
 
 function saveConfiguration() {
