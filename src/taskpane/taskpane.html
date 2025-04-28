@@ -29,6 +29,22 @@
     <div class="container">
         <header>
             <h1>WordLLM2</h1>
+            <div class="config-section">
+                <form id="configForm">
+                    <div class="config-input">
+                        <label for="baseURL">API Base URL:</label>
+                        <input type="text" id="baseURL" placeholder="https://openrouter.ai/api/v1" value="https://openrouter.ai/api/v1">
+                    </div>
+                    <div class="config-input">
+                        <label for="apiKey">API Key:</label>
+                        <input type="password" id="apiKey" placeholder="Enter your API key">
+                    </div>
+                    <button type="button" id="saveConfig" class="save-button">
+                        <span class="button-icon">💾</span>
+                        <span>Save Config</span>
+                    </button>
+                </form>
+            </div>
         </header>
         
         <main>

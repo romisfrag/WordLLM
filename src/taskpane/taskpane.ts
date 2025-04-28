@@ -5,9 +5,34 @@
 
 /* global document, Office, Word */
 import { askLLM } from '../lib/word_insertion';
+import { initializeModel } from '../lib/llm';
+import { setInLocalStorage, getFromLocalStorage } from '../lib/local_storage';
+
+let model: any = null;
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
+    // Load saved configuration
+    const savedBaseURL = getFromLocalStorage('baseURL');
+    const savedApiKey = getFromLocalStorage('apiKey');
+    
+    if (savedBaseURL) {
+      (document.getElementById("baseURL") as HTMLInputElement).value = savedBaseURL;
+    }
+    if (savedApiKey) {
+      (document.getElementById("apiKey") as HTMLInputElement).value = savedApiKey;
+    }
+
+    // Initialize model with saved or default values
+    const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
+    const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
+    model = initializeModel(baseURL, apiKey);
+
+    // Add event listeners for configuration changes
+    document.getElementById("baseURL").addEventListener("change", updateModel);
+    document.getElementById("apiKey").addEventListener("change", updateModel);
+    document.getElementById("saveConfig").addEventListener("click", saveConfiguration);
+
     // Add here all the event listeners
     document.getElementById("chat").onclick = chat;
     document.getElementById("explain").onclick = explain;
@@ -17,16 +42,32 @@ Office.onReady((info) => {
   }
 });
 
+function updateModel() {
+  const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
+  const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
+  model = initializeModel(baseURL, apiKey);
+}
+
+function saveConfiguration() {
+  const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
+  const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
+  
+  setInLocalStorage('baseURL', baseURL);
+  setInLocalStorage('apiKey', apiKey);
+  
+  // Show a success message
+  const responseDiv = document.getElementById('response');
+  if (responseDiv) {
+    responseDiv.innerHTML = '<div class="markdown-content">Configuration saved successfully!</div>';
+  }
+}
+
 // This function is called when the user clicks the "Chat" button
 export async function chat() {
-  return Word.run(async (context) => {
-    console.log("run button clicked");
-    // Get the prompt from the textarea
-    const textAreaValue = (document.getElementById('prompt') as HTMLTextAreaElement).value;
-    console.log('Retrieved textAreaValue:', textAreaValue);
-    await askLLM(textAreaValue, true); 
-    await context.sync();
-  });
+  // Get the prompt from the textarea
+  const textAreaValue = (document.getElementById('prompt') as HTMLTextAreaElement).value;
+  console.log('Retrieved textAreaValue:', textAreaValue);
+  await askLLM(textAreaValue, true, "", model);
 }
 
 // This function is called when the user clicks the "Explain" button
@@ -37,7 +78,7 @@ export async function explain() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, true, '/prompts/explain.txt');
+    await askLLM(selectedText, true, '/prompts/explain.txt', model);
     await context.sync();
   });
 }
@@ -50,7 +91,7 @@ export async function translateToEnglish() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/translateToEnglish.txt');
+    await askLLM(selectedText, false, '/prompts/translateToEnglish.txt', model);
     await context.sync();
   });
 }
@@ -63,7 +104,7 @@ export async function translateToFrench() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/translateToFrench.txt');
+    await askLLM(selectedText, false, '/prompts/translateToFrench.txt', model);
     await context.sync();
   });
 }
@@ -76,7 +117,7 @@ export async function enhance() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/enhance.txt');
+    await askLLM(selectedText, false, '/prompts/enhance.txt', model);
     await context.sync();
   });
 }

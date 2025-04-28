@@ -1,5 +1,6 @@
 import { getLLMResponse } from "./llm";
 import { marked } from 'marked';
+import { ChatOpenAI } from "@langchain/openai";
 
 
 
@@ -18,7 +19,7 @@ async function concatenatePrompt(promptUrl: string, selectedText: string) {
 
 // If taskPane is true, the response is displayed in the taskpane
 // If taskPane is false, the response replace the selection
-export async function askLLM(userText: string, taskPane: boolean = false, promptUrl: string = "") {
+export async function askLLM(userText: string, taskPane: boolean = false, promptUrl: string = "", model: ChatOpenAI) {
     try {
         await Word.run(async (context) => {
             // Get the current selection
@@ -27,7 +28,7 @@ export async function askLLM(userText: string, taskPane: boolean = false, prompt
             console.log('Full prompt:', fullPrompt);
 
             // Get response from LLM
-            const llmResponse = await getLLMResponse(fullPrompt);
+            const llmResponse = await getLLMResponse(fullPrompt, model);
             console.log('Received the LLM response:', llmResponse);
 
             // Display the response in the taskpane
