@@ -16,19 +16,26 @@ async function concatenatePrompt(promptUrl: string, selectedText: string) {
     return promptText + '\n' + selectedText;
   }
 }
+export async function askLLMUrlPrompt(userText: string, taskPane: boolean = false, promptUrl: string = "", model: ChatOpenAI) {
+  const fullPrompt = await concatenatePrompt(promptUrl, userText);
+  console.log('Full prompt:', fullPrompt);
+  askLLM(fullPrompt, taskPane, model);
+}
+
+export async function askLLMStrPrompt(userText: string, taskPane: boolean = false, promptStr: string = "", model: ChatOpenAI) {
+  const fullPrompt = promptStr + "\n" + userText;
+  console.log('Full prompt:', fullPrompt);
+  askLLM(fullPrompt, taskPane, model);
+}
+
 
 // If taskPane is true, the response is displayed in the taskpane
 // If taskPane is false, the response replace the selection
-export async function askLLM(userText: string, taskPane: boolean = false, promptUrl: string = "", model: ChatOpenAI) {
+export async function askLLM(prompt: string, taskPane: boolean = false, model: ChatOpenAI) {
     try {
         await Word.run(async (context) => {
-            // Get the current selection
-            
-            const fullPrompt = await concatenatePrompt(promptUrl, userText);
-            console.log('Full prompt:', fullPrompt);
-
             // Get response from LLM
-            const llmResponse = await getLLMResponse(fullPrompt, model);
+            const llmResponse = await getLLMResponse(prompt, model);
             console.log('Received the LLM response:', llmResponse);
 
             // Display the response in the taskpane

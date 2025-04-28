@@ -4,7 +4,7 @@
  */
 
 /* global document, Office, Word */
-import { askLLM } from '../lib/word_insertion';
+import { askLLMUrlPrompt, askLLMStrPrompt } from '../lib/word_insertion';
 import { initializeModel, fetchAvailableModels, filterModels } from '../lib/llm';
 import { setInLocalStorage, getFromLocalStorage } from '../lib/local_storage';
 
@@ -37,6 +37,25 @@ Office.onReady((info) => {
     document.getElementById("saveConfig").addEventListener("click", saveConfiguration);
     document.getElementById("modelSearch").addEventListener("input", handleModelSearch);
     document.getElementById("modelSelect").addEventListener("change", handleModelChange);
+
+    // Add tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and content
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        const tabId = button.getAttribute('data-tab');
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Add event listeners for dev mode execute buttons
+    document.getElementById("executeReplaceSelection").addEventListener("click", executeReplaceSelection);
+    document.getElementById("executeReplyTaskpane").addEventListener("click", executeReplyTaskpane);
 
     // Fetch available models
     fetchModels();
@@ -137,7 +156,7 @@ export async function chat() {
   // Get the prompt from the textarea
   const textAreaValue = (document.getElementById('prompt') as HTMLTextAreaElement).value;
   console.log('Retrieved textAreaValue:', textAreaValue);
-  await askLLM(textAreaValue, true, "", model);
+  await askLLMUrlPrompt(textAreaValue, true, "", model);
 }
 
 // This function is called when the user clicks the "Explain" button
@@ -148,7 +167,7 @@ export async function explain() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, true, '/prompts/explain.txt', model);
+    await askLLMUrlPrompt(selectedText, true, '/prompts/explain.txt', model);
     await context.sync();
   });
 }
@@ -161,7 +180,7 @@ export async function translateToEnglish() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/translateToEnglish.txt', model);
+    await askLLMUrlPrompt(selectedText, false, '/prompts/translateToEnglish.txt', model);
     await context.sync();
   });
 }
@@ -174,7 +193,7 @@ export async function translateToFrench() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/translateToFrench.txt', model);
+    await askLLMUrlPrompt(selectedText, false, '/prompts/translateToFrench.txt', model);
     await context.sync();
   });
 }
@@ -187,7 +206,36 @@ export async function enhance() {
     selection.load('text');
     await context.sync();
     const selectedText = selection.text;
-    await askLLM(selectedText, false, '/prompts/enhance.txt', model);
+    await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
+    await context.sync();
+  });
+}
+
+// Dev Mode Functions
+async function executeReplaceSelection() {
+  const prompt = (document.getElementById("promptReplaceSelection") as HTMLTextAreaElement).value;
+  if (!prompt) return;
+
+  return Word.run(async (context) => {
+    const selection = context.document.getSelection();
+    selection.load('text');
+    await context.sync();
+    const selectedText = selection.text;
+    await askLLMStrPrompt(selectedText, false, prompt, model);
+    await context.sync();
+  });
+}
+
+async function executeReplyTaskpane() {
+  const prompt = (document.getElementById("promptReplyTaskpane") as HTMLTextAreaElement).value;
+  if (!prompt) return;
+
+  return Word.run(async (context) => {
+    const selection = context.document.getSelection();
+    selection.load('text');
+    await context.sync();
+    const selectedText = selection.text;
+    await askLLMStrPrompt(selectedText, true, prompt, model);
     await context.sync();
   });
 }

@@ -101,14 +101,14 @@ textarea:focus {
     font-size: 16px;
 }
 
+/* Response Section Styles */
 .response-section {
-    padding: 16px;
+    margin-top: 1.5rem;
+    padding: 1rem;
     background-color: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     min-height: 100px;
-    font-size: 14px;
-    line-height: 1.6;
 }
 
 /* Markdown Content Styling */
@@ -387,4 +387,105 @@ textarea:focus {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.tab-button {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    background-color: var(--hover-color);
+}
+
+.tab-button.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Dev Mode Styles */
+.dev-mode-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.dev-mode-section h2 {
+    margin-bottom: 1rem;
+    color: #495057;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.dev-input-section {
+    padding: 1rem;
+    background-color: var(--background-color);
+    border-radius: 6px;
+}
+
+.dev-textarea-group {
+    margin-bottom: 1rem;
+}
+
+.dev-textarea-group:last-child {
+    margin-bottom: 0;
+}
+
+.dev-textarea-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.dev-textarea-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    resize: vertical;
+    background-color: white;
+    margin-bottom: 0.5rem;
+}
+
+.dev-textarea-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.dev-textarea-group .action-button {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
 }

@@ -58,7 +58,14 @@
             </div>
         </header>
         
-        <main>
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="main">Main</button>
+            <button class="tab-button" data-tab="dev">Dev Mode</button>
+        </div>
+
+        <!-- Main Tab Content -->
+        <div class="tab-content active" id="main-tab">
             <div class="input-section">
                 <textarea id="prompt" placeholder="Type your prompt here..." rows="4"></textarea>
             </div>
@@ -85,9 +92,32 @@
                     <span>Enhance</span>
                 </button>
             </div>
+        </div>
 
-            <div id="response" class="response-section markdown-content"></div>
-        </main>
+        <!-- Dev Mode Tab Content -->
+        <div class="tab-content" id="dev-tab">
+            <div class="dev-input-section">
+                <div class="dev-textarea-group">
+                    <label for="promptReplaceSelection">Prompt replace selection:</label>
+                    <textarea id="promptReplaceSelection" placeholder="Enter prompt for replacing selection..." rows="4"></textarea>
+                    <button id="executeReplaceSelection" class="action-button">
+                        <span class="button-icon">▶️</span>
+                        <span>Execute</span>
+                    </button>
+                </div>
+                <div class="dev-textarea-group">
+                    <label for="promptReplyTaskpane">Prompt reply in taskpane:</label>
+                    <textarea id="promptReplyTaskpane" placeholder="Enter prompt for taskpane reply..." rows="4"></textarea>
+                    <button id="executeReplyTaskpane" class="action-button">
+                        <span class="button-icon">▶️</span>
+                        <span>Execute</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shared Response Section -->
+        <div id="response" class="response-section markdown-content"></div>
     </div>
 </body>
 
