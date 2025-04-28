@@ -5,16 +5,18 @@
 
 /* global document, Office, Word */
 import { askLLM } from '../lib/word_insertion';
-import { initializeModel } from '../lib/llm';
+import { initializeModel, fetchAvailableModels, filterModels } from '../lib/llm';
 import { setInLocalStorage, getFromLocalStorage } from '../lib/local_storage';
 
 let model: any = null;
+let availableModels: string[] = [];
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     // Load saved configuration
     const savedBaseURL = getFromLocalStorage('baseURL');
     const savedApiKey = getFromLocalStorage('apiKey');
+    const savedModel = getFromLocalStorage('selectedModel');
     
     if (savedBaseURL) {
       (document.getElementById("baseURL") as HTMLInputElement).value = savedBaseURL;
@@ -32,6 +34,11 @@ Office.onReady((info) => {
     document.getElementById("baseURL").addEventListener("change", updateModel);
     document.getElementById("apiKey").addEventListener("change", updateModel);
     document.getElementById("saveConfig").addEventListener("click", saveConfiguration);
+    document.getElementById("modelSearch").addEventListener("input", handleModelSearch);
+    document.getElementById("modelSelect").addEventListener("change", handleModelChange);
+
+    // Fetch available models
+    fetchModels();
 
     // Add here all the event listeners
     document.getElementById("chat").onclick = chat;
@@ -42,10 +49,65 @@ Office.onReady((info) => {
   }
 });
 
+async function fetchModels() {
+    const modelSelect = document.getElementById("modelSelect") as HTMLSelectElement;
+    modelSelect.classList.add("loading");
+    
+    try {
+        const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
+        const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
+        
+        availableModels = await fetchAvailableModels(baseURL, apiKey);
+        updateModelDropdown(availableModels);
+        
+        // Restore saved model selection if exists
+        const savedModel = getFromLocalStorage('selectedModel');
+        if (savedModel && availableModels.includes(savedModel)) {
+            modelSelect.value = savedModel;
+        }
+    } catch (error) {
+        console.error("Error fetching models:", error);
+        modelSelect.innerHTML = '<option value="">Error loading models</option>';
+    } finally {
+        modelSelect.classList.remove("loading");
+    }
+}
+
+function updateModelDropdown(models: string[]) {
+    const modelSelect = document.getElementById("modelSelect") as HTMLSelectElement;
+    const searchTerm = (document.getElementById("modelSearch") as HTMLInputElement).value;
+    
+    // Filter models based on search term
+    const filteredModels = filterModels(models, searchTerm);
+    
+    // Update dropdown options
+    modelSelect.innerHTML = filteredModels.length > 0 
+        ? filteredModels.map(model => `<option value="${model}">${model}</option>`).join('')
+        : '<option value="">No models found</option>';
+}
+
+function handleModelSearch() {
+    updateModelDropdown(availableModels);
+}
+
+function handleModelChange() {
+    const selectedModel = (document.getElementById("modelSelect") as HTMLSelectElement).value;
+    if (selectedModel) {
+        setInLocalStorage('selectedModel', selectedModel);
+        updateModel();
+    }
+}
+
 function updateModel() {
-  const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
-  const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
-  model = initializeModel(baseURL, apiKey);
+    const baseURL = (document.getElementById("baseURL") as HTMLInputElement).value;
+    const apiKey = (document.getElementById("apiKey") as HTMLInputElement).value;
+    const selectedModel = (document.getElementById("modelSelect") as HTMLSelectElement).value;
+    
+    if (selectedModel) {
+        model = initializeModel(baseURL, apiKey, selectedModel);
+    } else {
+        model = initializeModel(baseURL, apiKey);
+    }
 }
 
 function saveConfiguration() {
@@ -60,6 +122,9 @@ function saveConfiguration() {
   if (responseDiv) {
     responseDiv.innerHTML = '<div class="markdown-content">Configuration saved successfully!</div>';
   }
+
+  // Fetch models with the new configuration
+  fetchModels();
 }
 
 // This function is called when the user clicks the "Chat" button

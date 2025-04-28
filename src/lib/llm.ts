@@ -1,8 +1,43 @@
 import { ChatOpenAI } from "@langchain/openai";
 
+// Interface for model data
+interface ModelData {
+    id: string;
+    name: string;
+    description?: string;
+}
+
+// Function to fetch available models from the API
+export async function fetchAvailableModels(baseURL: string, apiKey: string): Promise<string[]> {
+    try {
+        const response = await fetch(`${baseURL}/models`, {
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "HTTP-Referer": "https://localhost:3000",
+                "X-Title": "WordLLM",
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch models: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.data.map((model: ModelData) => model.id);
+    } catch (error) {
+        console.error("Error fetching models:", error);
+        throw error;
+    }
+}
+
+// Function to filter models based on search term
+export function filterModels(models: string[], searchTerm: string): string[] {
+    const term = searchTerm.toLowerCase();
+    return models.filter(model => model.toLowerCase().includes(term));
+}
 
 // Function to initialize the model with custom configuration
-export function initializeModel(baseURL: string, openAIApiKey: string) {
+export function initializeModel(baseURL: string, openAIApiKey: string, modelName?: string) {
     return new ChatOpenAI({
         openAIApiKey: openAIApiKey,
         configuration: {
@@ -12,7 +47,7 @@ export function initializeModel(baseURL: string, openAIApiKey: string) {
                 "X-Title": "WordLLM",
             },
         },
-        modelName: "qwen/qwen-2.5-7b-instruct:free",
+        modelName: modelName || "qwen/qwen-2.5-7b-instruct:free",
         temperature: 0.7,
     });
 }
