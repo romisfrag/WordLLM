@@ -10,6 +10,7 @@ import { setInLocalStorage, getFromLocalStorage } from '../lib/local_storage';
 
 let model: any = null;
 let availableModels: string[] = [];
+let currentPromptType: 'replaceSelection' | 'taskpane' | null = null;
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
@@ -56,6 +57,13 @@ Office.onReady((info) => {
     // Add event listeners for dev mode execute buttons
     document.getElementById("executeReplaceSelection").addEventListener("click", executeReplaceSelection);
     document.getElementById("executeReplyTaskpane").addEventListener("click", executeReplyTaskpane);
+    document.getElementById("saveReplaceSelectionPrompt").addEventListener("click", () => showPromptNamePopup('replaceSelection'));
+    document.getElementById("saveTaskpanePrompt").addEventListener("click", () => showPromptNamePopup('taskpane'));
+    document.getElementById("savePromptConfirm").addEventListener("click", savePromptWithName);
+    document.getElementById("cancelPromptSave").addEventListener("click", hidePromptNamePopup);
+
+    // Load saved custom prompts
+    loadCustomPrompts();
 
     // Fetch available models
     fetchModels();
@@ -238,4 +246,132 @@ async function executeReplyTaskpane() {
     await askLLMStrPrompt(selectedText, true, prompt, model);
     await context.sync();
   });
+}
+
+function showPromptNamePopup(promptType: 'replaceSelection' | 'taskpane') {
+    currentPromptType = promptType;
+    const popup = document.getElementById('promptNamePopup');
+    if (popup) {
+        popup.classList.add('active');
+        // Focus the input field
+        const input = document.getElementById('promptName') as HTMLInputElement;
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+}
+
+function hidePromptNamePopup() {
+    const popup = document.getElementById('promptNamePopup');
+    if (popup) {
+        popup.classList.remove('active');
+    }
+    currentPromptType = null;
+}
+
+function savePromptWithName() {
+    if (!currentPromptType) return;
+
+    const promptName = (document.getElementById('promptName') as HTMLInputElement).value.trim();
+    if (!promptName) {
+        showSuccessMessage('Please enter a name for the prompt');
+        return;
+    }
+
+    let promptText = '';
+    if (currentPromptType === 'replaceSelection') {
+        promptText = (document.getElementById("promptReplaceSelection") as HTMLTextAreaElement).value;
+    } else {
+        promptText = (document.getElementById("promptReplyTaskpane") as HTMLTextAreaElement).value;
+    }
+
+    if (promptText) {
+        // Save the prompt with its name
+        const savedPrompts = JSON.parse(getFromLocalStorage('savedPrompts') || '{}');
+        savedPrompts[promptName] = {
+            type: currentPromptType,
+            text: promptText
+        };
+        setInLocalStorage('savedPrompts', JSON.stringify(savedPrompts));
+        showSuccessMessage(`Prompt "${promptName}" saved successfully!`);
+        hidePromptNamePopup();
+        loadCustomPrompts(); // Reload the custom prompts list
+    }
+}
+
+function showSuccessMessage(message: string) {
+    const responseDiv = document.getElementById('response');
+    if (responseDiv) {
+        responseDiv.innerHTML = `<div class="markdown-content">${message}</div>`;
+    }
+}
+
+function loadCustomPrompts() {
+    const savedPrompts = JSON.parse(getFromLocalStorage('savedPrompts') || '{}');
+    const customReplacePrompts = document.getElementById('customReplacePrompts');
+    const customTaskpanePrompts = document.getElementById('customTaskpanePrompts');
+
+    if (customReplacePrompts && customTaskpanePrompts) {
+        customReplacePrompts.innerHTML = '';
+        customTaskpanePrompts.innerHTML = '';
+
+        Object.entries(savedPrompts).forEach(([name, promptData]: [string, any]) => {
+            const button = createCustomPromptButton(name, promptData);
+            if (promptData.type === 'replaceSelection') {
+                customReplacePrompts.appendChild(button);
+            } else {
+                customTaskpanePrompts.appendChild(button);
+            }
+        });
+    }
+}
+
+function createCustomPromptButton(name: string, promptData: any) {
+    const button = document.createElement('button');
+    button.className = 'action-button custom-prompt-button';
+    button.innerHTML = `
+        <span class="button-text">${name}</span>
+        <button class="delete-prompt-button" title="Delete prompt">🗑️</button>
+    `;
+
+    button.addEventListener('click', () => {
+        if (promptData.type === 'replaceSelection') {
+            return Word.run(async (context) => {
+                const selection = context.document.getSelection();
+                selection.load('text');
+                await context.sync();
+                const selectedText = selection.text;
+                await askLLMStrPrompt(selectedText, false, promptData.text, model);
+                await context.sync();
+            });
+        } else {
+            return Word.run(async (context) => {
+                const selection = context.document.getSelection();
+                selection.load('text');
+                await context.sync();
+                const selectedText = selection.text;
+                await askLLMStrPrompt(selectedText, true, promptData.text, model);
+                await context.sync();
+            });
+        }
+    });
+
+    const deleteButton = button.querySelector('.delete-prompt-button');
+    if (deleteButton) {
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteCustomPrompt(name);
+        });
+    }
+
+    return button;
+}
+
+function deleteCustomPrompt(name: string) {
+    const savedPrompts = JSON.parse(getFromLocalStorage('savedPrompts') || '{}');
+    delete savedPrompts[name];
+    setInLocalStorage('savedPrompts', JSON.stringify(savedPrompts));
+    loadCustomPrompts();
+    showSuccessMessage(`Prompt "${name}" deleted successfully!`);
 }

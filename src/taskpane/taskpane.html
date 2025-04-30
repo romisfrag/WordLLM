@@ -61,56 +61,91 @@
         <!-- Tab Navigation -->
         <div class="tab-navigation">
             <button class="tab-button active" data-tab="main">Main</button>
-            <button class="tab-button" data-tab="dev">Dev Mode</button>
+            <button class="tab-button" data-tab="advanced">Advanced Mode</button>
         </div>
 
         <!-- Main Tab Content -->
         <div class="tab-content active" id="main-tab">
             <div class="input-section">
                 <textarea id="prompt" placeholder="Type your prompt here..." rows="4"></textarea>
-            </div>
-
-            <div class="button-group">
-                <button id="chat" class="action-button">
+                <button id="chat" class="action-button chat-button">
                     <span class="button-icon">💬</span>
                     <span>Chat</span>
                 </button>
-                <button id="explain" class="action-button">
-                    <span class="button-icon">📚</span>
-                    <span>Explain</span>
-                </button>
-                <button id="translateToEnglish" class="action-button">
-                    <span class="button-icon">🇬🇧</span>
-                    <span>English</span>
-                </button>
-                <button id="translateToFrench" class="action-button">
-                    <span class="button-icon">🇫🇷</span>
-                    <span>French</span>
-                </button>
-                <button id="enhance" class="action-button">
-                    <span class="button-icon">✨</span>
-                    <span>Enhance</span>
-                </button>
+            </div>
+
+            <h3 class="columns-title">Predefined prompts</h3>
+            <div class="button-columns">
+                <div class="button-column">
+                    <h3>Replace selection prompt</h3>
+                    <div class="button-group">
+                        <button id="translateToEnglish" class="action-button">
+                            <span class="button-icon">🇬🇧</span>
+                            <span>English</span>
+                        </button>
+                        <button id="translateToFrench" class="action-button">
+                            <span class="button-icon">🇫🇷</span>
+                            <span>French</span>
+                        </button>
+                        <button id="enhance" class="action-button">
+                            <span class="button-icon">✨</span>
+                            <span>Enhance</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="button-column">
+                    <h3>TaskPane prompt</h3>
+                    <div class="button-group">
+                        <button id="explain" class="action-button">
+                            <span class="button-icon">📚</span>
+                            <span>Explain</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="columns-title">Custom prompts</h3>
+            <div class="button-columns">
+                <div class="button-column">
+                    <h3>Replace selection prompt</h3>
+                    <div class="button-group custom-prompts-group" id="customReplacePrompts">
+                        <!-- Custom replace selection prompts will be added here dynamically -->
+                    </div>
+                </div>
+                <div class="button-column">
+                    <h3>TaskPane prompt</h3>
+                    <div class="button-group custom-prompts-group" id="customTaskpanePrompts">
+                        <!-- Custom taskpane prompts will be added here dynamically -->
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Dev Mode Tab Content -->
-        <div class="tab-content" id="dev-tab">
+        <!-- Advanced Mode Tab Content -->
+        <div class="tab-content" id="advanced-tab">
             <div class="dev-input-section">
                 <div class="dev-textarea-group">
-                    <label for="promptReplaceSelection">Prompt replace selection:</label>
+                    <label for="promptReplaceSelection">Replace selection prompt:</label>
                     <textarea id="promptReplaceSelection" placeholder="Enter prompt for replacing selection..." rows="4"></textarea>
                     <button id="executeReplaceSelection" class="action-button">
                         <span class="button-icon">▶️</span>
                         <span>Execute</span>
                     </button>
+                    <button id="saveReplaceSelectionPrompt" class="action-button">
+                        <span class="button-icon">💾</span>
+                        <span>Save this prompt</span>
+                    </button>
                 </div>
                 <div class="dev-textarea-group">
-                    <label for="promptReplyTaskpane">Prompt reply in taskpane:</label>
+                    <label for="promptReplyTaskpane">TaskPane prompt:</label>
                     <textarea id="promptReplyTaskpane" placeholder="Enter prompt for taskpane reply..." rows="4"></textarea>
                     <button id="executeReplyTaskpane" class="action-button">
                         <span class="button-icon">▶️</span>
                         <span>Execute</span>
+                    </button>
+                    <button id="saveTaskpanePrompt" class="action-button">
+                        <span class="button-icon">💾</span>
+                        <span>Save this prompt</span>
                     </button>
                 </div>
             </div>
@@ -118,6 +153,27 @@
 
         <!-- Shared Response Section -->
         <div id="response" class="response-section markdown-content"></div>
+    </div>
+
+    <!-- Prompt Name Popup -->
+    <div id="promptNamePopup" class="popup-overlay">
+        <div class="popup-content">
+            <h3>Save Prompt</h3>
+            <div class="popup-input">
+                <label for="promptName">Enter a name for this prompt:</label>
+                <input type="text" id="promptName" placeholder="My Custom Prompt">
+            </div>
+            <div class="popup-buttons">
+                <button id="savePromptConfirm" class="action-button">
+                    <span class="button-icon">💾</span>
+                    <span>Save</span>
+                </button>
+                <button id="cancelPromptSave" class="action-button">
+                    <span class="button-icon">❌</span>
+                    <span>Cancel</span>
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 
