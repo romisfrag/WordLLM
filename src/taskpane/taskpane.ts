@@ -12,6 +12,27 @@ let model: any = null;
 let availableModels: string[] = [];
 let currentPromptType: 'replaceSelection' | 'taskpane' | null = null;
 
+// Loading overlay functions
+function showLoadingOverlay() {
+    console.log('Showing loading overlay');
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.classList.add('active');
+    } else {
+        console.error('Loading overlay element not found');
+    }
+}
+
+function hideLoadingOverlay() {
+    console.log('Hiding loading overlay');
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.classList.remove('active');
+    }
+}
+
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     // Load saved configuration
@@ -162,91 +183,91 @@ function saveConfiguration() {
 
 // This function is called when the user clicks the "Chat" button
 export async function chat() {
-  // Get the prompt from the textarea
-  const textAreaValue = (document.getElementById('prompt') as HTMLTextAreaElement).value;
-  console.log('Retrieved textAreaValue:', textAreaValue);
-  await askLLMUrlPrompt(textAreaValue, true, "", model);
+    // Get the prompt from the textarea
+    const textAreaValue = (document.getElementById('prompt') as HTMLTextAreaElement).value;
+    console.log('Retrieved textAreaValue:', textAreaValue);
+    await askLLMUrlPrompt(textAreaValue, true, "", model);
 }
 
 // This function is called when the user clicks the "Explain" button
 export async function explain() {
-  return Word.run(async (context) => {
-    // Get the current selection
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMUrlPrompt(selectedText, true, '/prompts/explain.txt', model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        // Get the current selection
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMUrlPrompt(selectedText, true, '/prompts/explain.txt', model);
+        await context.sync();
+    });
 }
 
 // This function is called when the user clicks the "Translate to English" button
 export async function translateToEnglish() {
-  return Word.run(async (context) => {
-    console.log("translate to english button clicked");
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMUrlPrompt(selectedText, false, '/prompts/translateToEnglish.txt', model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        console.log("translate to english button clicked");
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMUrlPrompt(selectedText, false, '/prompts/translateToEnglish.txt', model);
+        await context.sync();
+    });
 }
 
 // This function is called when the user clicks the "Translate to French" button
 export async function translateToFrench() {
-  return Word.run(async (context) => {
-    console.log("translate to english button clicked");
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMUrlPrompt(selectedText, false, '/prompts/translateToFrench.txt', model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        console.log("translate to english button clicked");
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMUrlPrompt(selectedText, false, '/prompts/translateToFrench.txt', model);
+        await context.sync();
+    });
 }
 
 // This function is called when the user clicks the "Enhance" button
 export async function enhance() {
-  return Word.run(async (context) => {
-    console.log("enhance button clicked");
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        console.log("enhance button clicked");
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
+        await context.sync();
+    });
 }
 
 // Dev Mode Functions
 async function executeReplaceSelection() {
-  const prompt = (document.getElementById("promptReplaceSelection") as HTMLTextAreaElement).value;
-  if (!prompt) return;
+    const prompt = (document.getElementById("promptReplaceSelection") as HTMLTextAreaElement).value;
+    if (!prompt) return;
 
-  return Word.run(async (context) => {
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMStrPrompt(selectedText, false, prompt, model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMStrPrompt(selectedText, false, prompt, model);
+        await context.sync();
+    });
 }
 
 async function executeReplyTaskpane() {
-  const prompt = (document.getElementById("promptReplyTaskpane") as HTMLTextAreaElement).value;
-  if (!prompt) return;
+    const prompt = (document.getElementById("promptReplyTaskpane") as HTMLTextAreaElement).value;
+    if (!prompt) return;
 
-  return Word.run(async (context) => {
-    const selection = context.document.getSelection();
-    selection.load('text');
-    await context.sync();
-    const selectedText = selection.text;
-    await askLLMStrPrompt(selectedText, true, prompt, model);
-    await context.sync();
-  });
+    return Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMStrPrompt(selectedText, true, prompt, model);
+        await context.sync();
+    });
 }
 
 function showPromptNamePopup(promptType: 'replaceSelection' | 'taskpane') {

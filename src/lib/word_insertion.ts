@@ -32,6 +32,13 @@ export async function askLLMStrPrompt(userText: string, taskPane: boolean = fals
 // If taskPane is true, the response is displayed in the taskpane
 // If taskPane is false, the response replace the selection
 export async function askLLM(prompt: string, taskPane: boolean = false, model: ChatOpenAI) {
+    // Show loading overlay
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.classList.add('active');
+    }
+
     try {
         await Word.run(async (context) => {
             // Get response from LLM
@@ -59,6 +66,12 @@ export async function askLLM(prompt: string, taskPane: boolean = false, model: C
         if (responseDiv) {
             console.log('Displaying error in UI');
             responseDiv.textContent = `An error occurred: ${error.message || error}. Please try again.`;
+        }
+    } finally {
+        // Hide loading overlay
+        if (overlay) {
+            overlay.style.display = 'none';
+            overlay.classList.remove('active');
         }
     }
     console.log('Finished askLLM function');
