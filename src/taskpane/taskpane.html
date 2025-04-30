@@ -30,30 +30,38 @@
         <header>
             <h1>WordLLM2</h1>
             <div class="config-section">
-                <form id="configForm">
-                    <div class="config-input">
-                        <label for="baseURL">API Base URL:</label>
-                        <input type="text" id="baseURL" placeholder="https://openrouter.ai/api/v1" value="https://openrouter.ai/api/v1">
-                    </div>
-                    <div class="config-input">
-                        <label for="apiKey">API Key:</label>
-                        <input type="password" id="apiKey" placeholder="Enter your API key">
-                    </div>
-                    <button type="button" id="saveConfig" class="save-button">
-                        <span class="button-icon">💾</span>
-                        <span>Save Config</span>
+                <div class="config-header">
+                    <h3>Configuration</h3>
+                    <button id="toggleConfig" class="collapse-button">
+                        <span class="button-icon">−</span>
                     </button>
-                </form>
-                <div class="model-section">
-                    <div class="model-input">
-                        <label for="modelSearch">Search Model:</label>
-                        <input type="text" id="modelSearch" placeholder="Type to search models..." class="search-input">
-                    </div>
-                    <div class="model-dropdown">
-                        <select id="modelSelect" class="model-select">
-                            <option value="">Loading models...</option>
-                        </select>
-                    </div>
+                </div>
+                <div class="config-content">
+                    <form id="configForm">
+                        <div class="config-input">
+                            <label for="baseURL">API Base URL:</label>
+                            <input type="text" id="baseURL" placeholder="https://openrouter.ai/api/v1" value="https://openrouter.ai/api/v1">
+                        </div>
+                        <div class="config-input">
+                            <label for="apiKey">API Key:</label>
+                            <input type="password" id="apiKey" placeholder="Enter your API key">
+                        </div>
+                        <button type="button" id="saveConfig" class="save-button">
+                            <span class="button-icon">💾</span>
+                            <span>Save Config</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="model-section">
+                <div class="model-input">
+                    <label for="modelSearch">Search Model:</label>
+                    <input type="text" id="modelSearch" placeholder="Type to search models..." class="search-input">
+                </div>
+                <div class="model-dropdown">
+                    <select id="modelSelect" class="model-select">
+                        <option value="">Loading models...</option>
+                    </select>
                 </div>
             </div>
         </header>
@@ -80,12 +88,12 @@
                     <h3>Replace selection prompt</h3>
                     <div class="button-group">
                         <button id="translateToEnglish" class="action-button">
-                            <span class="button-icon">🇬🇧</span>
-                            <span>English</span>
+                            <span class="button-icon">🌐</span>
+                            <span>Translate to English</span>
                         </button>
                         <button id="translateToFrench" class="action-button">
-                            <span class="button-icon">🇫🇷</span>
-                            <span>French</span>
+                            <span class="button-icon">🌐</span>
+                            <span>Translate to French</span>
                         </button>
                         <button id="enhance" class="action-button">
                             <span class="button-icon">✨</span>
@@ -127,32 +135,39 @@
                 <div class="dev-textarea-group">
                     <label for="promptReplaceSelection">Replace selection prompt:</label>
                     <textarea id="promptReplaceSelection" placeholder="Enter prompt for replacing selection..." rows="4"></textarea>
-                    <button id="executeReplaceSelection" class="action-button">
-                        <span class="button-icon">▶️</span>
-                        <span>Execute</span>
-                    </button>
-                    <button id="saveReplaceSelectionPrompt" class="action-button">
-                        <span class="button-icon">💾</span>
-                        <span>Save this prompt</span>
-                    </button>
+                    <div class="button-container">
+                        <button id="executeReplaceSelection" class="action-button">
+                            <span class="button-icon">▶️</span>
+                            <span>Execute</span>
+                        </button>
+                        <button id="saveReplaceSelectionPrompt" class="action-button">
+                            <span class="button-icon">💾</span>
+                            <span>Save this prompt</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="dev-textarea-group">
                     <label for="promptReplyTaskpane">TaskPane prompt:</label>
                     <textarea id="promptReplyTaskpane" placeholder="Enter prompt for taskpane reply..." rows="4"></textarea>
-                    <button id="executeReplyTaskpane" class="action-button">
-                        <span class="button-icon">▶️</span>
-                        <span>Execute</span>
-                    </button>
-                    <button id="saveTaskpanePrompt" class="action-button">
-                        <span class="button-icon">💾</span>
-                        <span>Save this prompt</span>
-                    </button>
+                    <div class="button-container">
+                        <button id="executeReplyTaskpane" class="action-button">
+                            <span class="button-icon">▶️</span>
+                            <span>Execute</span>
+                        </button>
+                        <button id="saveTaskpanePrompt" class="action-button">
+                            <span class="button-icon">💾</span>
+                            <span>Save this prompt</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Shared Response Section -->
-        <div id="response" class="response-section markdown-content"></div>
+        <div class="response-section">
+            <h3 class="response-title">TaskPane Response</h3>
+            <div id="response" class="markdown-content"></div>
+        </div>
     </div>
 
     <!-- Prompt Name Popup -->

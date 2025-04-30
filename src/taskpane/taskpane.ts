@@ -38,6 +38,7 @@ Office.onReady((info) => {
     document.getElementById("saveConfig").addEventListener("click", saveConfiguration);
     document.getElementById("modelSearch").addEventListener("input", handleModelSearch);
     document.getElementById("modelSelect").addEventListener("change", handleModelChange);
+    document.getElementById("toggleConfig").addEventListener("click", toggleConfigSection);
 
     // Add tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -374,4 +375,17 @@ function deleteCustomPrompt(name: string) {
     setInLocalStorage('savedPrompts', JSON.stringify(savedPrompts));
     loadCustomPrompts();
     showSuccessMessage(`Prompt "${name}" deleted successfully!`);
+}
+
+function toggleConfigSection() {
+    const configSection = document.querySelector('.config-section');
+    if (configSection) {
+        configSection.classList.toggle('collapsed');
+        const button = document.getElementById('toggleConfig');
+        if (button) {
+            button.innerHTML = configSection.classList.contains('collapsed') 
+                ? '<span class="button-icon">+</span>' 
+                : '<span class="button-icon">−</span>';
+        }
+    }
 }
