@@ -52,6 +52,12 @@ export async function askLLM(prompt: string, taskPane: boolean = false, model: C
                   const parsedMarkdown = await marked.parse(llmResponse);
                   console.log('Displaying response in taskpane : \n ' + parsedMarkdown);
                   responseDiv.innerHTML = `<div class="markdown-content">${parsedMarkdown}</div>`;
+                  
+                  // Scroll to the response section
+                  const responseSection = document.querySelector('.response-section');
+                  if (responseSection) {
+                      responseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
               }
             } else {
               const selection = context.document.getSelection();
@@ -66,6 +72,12 @@ export async function askLLM(prompt: string, taskPane: boolean = false, model: C
         if (responseDiv) {
             console.log('Displaying error in UI');
             responseDiv.textContent = `An error occurred: ${error.message || error}. Please try again.`;
+            
+            // Scroll to the response section even on error
+            const responseSection = document.querySelector('.response-section');
+            if (responseSection) {
+                responseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
     } finally {
         // Hide loading overlay
