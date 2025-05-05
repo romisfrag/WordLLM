@@ -208,9 +208,9 @@ export async function translateToEnglish() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
         const selection = context.document.getSelection();
-        selection.load('text');
+        const ooxml = selection.getOoxml();
         await context.sync();
-        const selectedText = selection.text;
+        const selectedText = ooxml.value;
         await askLLMUrlPrompt(selectedText, false, '/prompts/translateToEnglish.txt', model);
         await context.sync();
     });
@@ -221,9 +221,9 @@ export async function translateToFrench() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
         const selection = context.document.getSelection();
-        selection.load('text');
+        const ooxml = selection.getOoxml();
         await context.sync();
-        const selectedText = selection.text;
+        const selectedText = ooxml.value;
         await askLLMUrlPrompt(selectedText, false, '/prompts/translateToFrench.txt', model);
         await context.sync();
     });
@@ -234,9 +234,9 @@ export async function enhance() {
     return Word.run(async (context) => {
         console.log("enhance button clicked");
         const selection = context.document.getSelection();
-        selection.load('text');
+        const ooxml = selection.getOoxml();
         await context.sync();
-        const selectedText = selection.text;
+        const selectedText = ooxml.value;
         await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
         await context.sync();
     });
@@ -247,9 +247,9 @@ export async function correctSpelling() {
     return Word.run(async (context) => {
         console.log("correct spelling button clicked");
         const selection = context.document.getSelection();
-        selection.load('text');
+        const ooxml = selection.getOoxml();
         await context.sync();
-        const selectedText = selection.text;
+        const selectedText = ooxml.value;
         await askLLMUrlPrompt(selectedText, false, '/prompts/correctSpelling.txt', model);
         await context.sync();
     });
@@ -262,9 +262,9 @@ async function executeReplaceSelection() {
 
     return Word.run(async (context) => {
         const selection = context.document.getSelection();
-        selection.load('text');
+        const ooxml = selection.getOoxml();
         await context.sync();
-        const selectedText = selection.text;
+        const selectedText = ooxml.value;
         await askLLMStrPrompt(selectedText, false, prompt, model);
         await context.sync();
     });
