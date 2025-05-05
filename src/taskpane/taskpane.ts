@@ -96,6 +96,7 @@ Office.onReady((info) => {
     document.getElementById("translateToEnglish").onclick = translateToEnglish;
     document.getElementById("translateToFrench").onclick = translateToFrench;
     document.getElementById("enhance").onclick = enhance;
+    document.getElementById("correctSpelling").onclick = correctSpelling;
   }
 });
 
@@ -237,6 +238,19 @@ export async function enhance() {
         await context.sync();
         const selectedText = selection.text;
         await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
+        await context.sync();
+    });
+}
+
+// This function is called when the user clicks the "Correct Spelling" button
+export async function correctSpelling() {
+    return Word.run(async (context) => {
+        console.log("correct spelling button clicked");
+        const selection = context.document.getSelection();
+        selection.load('text');
+        await context.sync();
+        const selectedText = selection.text;
+        await askLLMUrlPrompt(selectedText, false, '/prompts/correctSpelling.txt', model);
         await context.sync();
     });
 }
