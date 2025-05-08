@@ -379,11 +379,11 @@ function createCustomPromptButton(name: string, promptData: any) {
     button.addEventListener('click', () => {
         if (promptData.type === 'replaceSelection') {
             return Word.run(async (context) => {
-                const selection = context.document.getSelection();
-                selection.load('text');
-                await context.sync();
-                const selectedText = selection.text;
-                await askLLMStrPrompt(selectedText, false, promptData.text, model);
+                const { html, body } = await getSelectionAsHTML();
+                // Clean the custom prompt and add HTML preservation prompt
+                const cleanPrompt = promptData.text.replace(/:$/, '.');
+                const fullPrompt = cleanPrompt + ' ' + await (await fetch('/prompts/html_preserve.txt')).text();
+                await askLLMStrPrompt(body, false, fullPrompt, model);
                 await context.sync();
             });
         } else {

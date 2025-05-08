@@ -37,15 +37,17 @@ export function filterModels(models: string[], searchTerm: string): string[] {
 }
 
 // Function to initialize the model with custom configuration
-export function initializeModel(baseURL: string, openAIApiKey: string, modelName?: string) {
+export function initializeModel(baseURL: string, openAIApiKey: string, modelName?: string, promptName?: string) {
+    const defaultHeaders = {
+        "HTTP-Referer": "https://localhost:3000",
+        "X-Title": promptName ? `WordLLM/${promptName}` : "WordLLM"
+    };
+
     return new ChatOpenAI({
         openAIApiKey: openAIApiKey,
         configuration: {
             baseURL: baseURL,
-            defaultHeaders: {
-                "HTTP-Referer": "https://localhost:3000",
-                "X-Title": "WordLLM",
-            },
+            defaultHeaders: defaultHeaders,
         },
         modelName: modelName || "qwen/qwen-2.5-7b-instruct:free",
         temperature: 0.7,

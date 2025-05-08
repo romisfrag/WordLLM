@@ -1,6 +1,8 @@
 import { getLLMResponse } from "./llm";
 import { marked } from 'marked';
 import { ChatOpenAI } from "@langchain/openai";
+import { initializeModel } from "./llm";
+import { getFromLocalStorage } from "./local_storage";
 
 
 async function concatenatePrompt(promptUrl: string, selectedText: string, isReplaceSelection: boolean = false) {
@@ -32,7 +34,28 @@ async function concatenatePrompt(promptUrl: string, selectedText: string, isRepl
 export async function askLLMUrlPrompt(userText: string, taskPane: boolean = false, promptUrl: string = "", model: ChatOpenAI) {
   const fullPrompt = await concatenatePrompt(promptUrl, userText, !taskPane);
   console.log('Full prompt:', fullPrompt);
-  askLLM(fullPrompt, taskPane, model);
+  
+  // Extract prompt name from URL if available
+  let promptName;
+  if (promptUrl) {
+    const urlParts = promptUrl.split('/');
+    promptName = urlParts[urlParts.length - 1].replace('.txt', '');
+  }
+  
+  // Get configuration from local storage
+  const baseURL = getFromLocalStorage('baseURL');
+  const apiKey = getFromLocalStorage('apiKey');
+  const selectedModel = getFromLocalStorage('selectedModel');
+  
+  // Create a new model instance with the prompt name
+  const modelWithPrompt = initializeModel(
+    baseURL,
+    apiKey,
+    selectedModel,
+    promptName
+  );
+  
+  askLLM(fullPrompt, taskPane, modelWithPrompt);
 }
 
 export async function askLLMStrPrompt(userText: string, taskPane: boolean = false, promptStr: string = "", model: ChatOpenAI) {
