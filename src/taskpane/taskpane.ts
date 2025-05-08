@@ -199,7 +199,7 @@ export async function explain() {
         selection.load('text');
         await context.sync();
         const selectedText = selection.text;
-        await askLLMUrlPrompt(selectedText, true, '/prompts/explain.txt', model);
+        await askLLMUrlPrompt(selectedText, true, '/WordLLM/prompts/explain.txt', model);
         await context.sync();
     });
 }
@@ -231,7 +231,7 @@ export async function translateToEnglish() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
         const { html, body } = await getSelectionAsHTML();
-        await askLLMUrlPrompt(body, false, '/prompts/translateToEnglish.txt', model);
+        await askLLMUrlPrompt(body, false, '/WordLLM/prompts/translateToEnglish.txt', model);
         await context.sync();
     });
 }
@@ -240,7 +240,7 @@ export async function translateToFrench() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
         const { html, body } = await getSelectionAsHTML();
-        await askLLMUrlPrompt(body, false, '/prompts/translateToFrench.txt', model);
+        await askLLMUrlPrompt(body, false, '/WordLLM/prompts/translateToFrench.txt', model);
         await context.sync();
     });
 }
@@ -249,7 +249,7 @@ export async function enhance() {
     return Word.run(async (context) => {
         console.log("enhance button clicked");
         const { html, body } = await getSelectionAsHTML();
-        await askLLMUrlPrompt(body, false, '/prompts/enhance.txt', model);
+        await askLLMUrlPrompt(body, false, '/WordLLM/prompts/enhance.txt', model);
         await context.sync();
     });
 }
@@ -258,7 +258,7 @@ export async function correctSpelling() {
     return Word.run(async (context) => {
         console.log("correct spelling button clicked");
         const { html, body } = await getSelectionAsHTML();
-        await askLLMUrlPrompt(body, false, '/prompts/correctSpelling.txt', model);
+        await askLLMUrlPrompt(body, false, '/WordLLM/prompts/correctSpelling.txt', model);
         await context.sync();
     });
 }
@@ -382,7 +382,7 @@ function createCustomPromptButton(name: string, promptData: any) {
                 const { html, body } = await getSelectionAsHTML();
                 // Clean the custom prompt and add HTML preservation prompt
                 const cleanPrompt = promptData.text.replace(/:$/, '.');
-                const fullPrompt = cleanPrompt + ' ' + await (await fetch('/prompts/html_preserve.txt')).text();
+                const fullPrompt = cleanPrompt + ' ' + await (await fetch('/WordLLM/prompts/html_preserve.txt')).text();
                 await askLLMStrPrompt(body, false, fullPrompt, model);
                 await context.sync();
             });

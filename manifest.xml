@@ -8,9 +8,9 @@
   <Description DefaultValue="Enhance your Word documents with AI-powered assistance. WordLLM integrates with various LLM providers to help you write, edit, and improve your documents directly from Word."/>
   <IconUrl DefaultValue="https://romisfrag.github.io/WordLLM/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://romisfrag.github.io/WordLLM/assets/icon-64.png"/>
-  <SupportUrl DefaultValue="https://github.com/romisfrag/WordLLM"/>
+  <SupportUrl DefaultValue="https://github.com/romisfrag/WordLLM/"/>
   <AppDomains>
-    <AppDomain>https://romisfrag.github.io</AppDomain>
+    <AppDomain>https://romisfrag.github.io/WordLLM/</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>
@@ -67,7 +67,7 @@
         <bt:Image id="Icon.80x80" DefaultValue="https://romisfrag.github.io/WordLLM/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://romisfrag.github.io/WordLLM/help"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/romisfrag/WordLLM"/>
         <bt:Url id="Commands.Url" DefaultValue="https://romisfrag.github.io/WordLLM/commands.html"/>
         <bt:Url id="Taskpane.Url" DefaultValue="https://romisfrag.github.io/WordLLM/taskpane.html"/>
       </bt:Urls>

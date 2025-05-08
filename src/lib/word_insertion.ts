@@ -19,7 +19,7 @@ async function concatenatePrompt(promptUrl: string, selectedText: string, isRepl
     if (isReplaceSelection) {
       const cleanPromptText = promptText.replace(/:$/, '.');
       // Add HTML preservation prompt only for replace selection
-      const htmlPreserveResponse = await fetch('/prompts/html_preserve.txt');
+      const htmlPreserveResponse = await fetch('/WordLLM/prompts/html_preserve.txt');
       if (!htmlPreserveResponse.ok) {
         throw new Error(`Failed to load HTML preservation prompt: ${htmlPreserveResponse.status} ${htmlPreserveResponse.statusText}`);
       }
