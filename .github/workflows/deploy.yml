@@ -32,4 +32,6 @@ jobs:
         with:
           folder: dist
           branch: gh-pages
-          clean: true 
+          clean: true
+          single-commit: true
+          commit-message: "Deploy to GitHub Pages" 
