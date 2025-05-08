@@ -1,0 +1,1 @@
+The following text describes a vulnerability. Provide a clear and precise recommendation to mitigate this vulnerability. Focus only on the mitigation advice and do not add any additional explanation or content:
