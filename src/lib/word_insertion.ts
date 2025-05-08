@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import { ChatOpenAI } from "@langchain/openai";
 
 
-async function concatenatePrompt(promptUrl: string, selectedText: string) {
+async function concatenatePrompt(promptUrl: string, selectedText: string, isReplaceSelection: boolean = false) {
   if (promptUrl === "") {
     return selectedText;
   } else {
@@ -12,11 +12,25 @@ async function concatenatePrompt(promptUrl: string, selectedText: string) {
       throw new Error(`Failed to load prompt: ${response.status} ${response.statusText}`);
     }
     const promptText = await response.text();
-    return promptText + '\n' + selectedText;
-  }
+    // Remove trailing colon if present
+    
+    if (isReplaceSelection) {
+      const cleanPromptText = promptText.replace(/:$/, '.');
+      // Add HTML preservation prompt only for replace selection
+      const htmlPreserveResponse = await fetch('/prompts/html_preserve.txt');
+      if (!htmlPreserveResponse.ok) {
+        throw new Error(`Failed to load HTML preservation prompt: ${htmlPreserveResponse.status} ${htmlPreserveResponse.statusText}`);
+      }
+      const htmlPreserveText = await htmlPreserveResponse.text();
+      return cleanPromptText + ' ' + htmlPreserveText + '\n' + selectedText;
+    } else {
+      return promptText + '\n' + selectedText;
+    }
+  } 
 }
+
 export async function askLLMUrlPrompt(userText: string, taskPane: boolean = false, promptUrl: string = "", model: ChatOpenAI) {
-  const fullPrompt = await concatenatePrompt(promptUrl, userText);
+  const fullPrompt = await concatenatePrompt(promptUrl, userText, !taskPane);
   console.log('Full prompt:', fullPrompt);
   askLLM(fullPrompt, taskPane, model);
 }
