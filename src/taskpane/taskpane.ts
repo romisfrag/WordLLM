@@ -7,6 +7,7 @@
 import { askLLMUrlPrompt, askLLMStrPrompt } from '../lib/word_insertion';
 import { initializeModel, fetchAvailableModels, filterModels } from '../lib/llm';
 import { setInLocalStorage, getFromLocalStorage } from '../lib/local_storage';
+import { marked } from 'marked';
 
 let model: any = null;
 let availableModels: string[] = [];
@@ -203,54 +204,61 @@ export async function explain() {
     });
 }
 
-// This function is called when the user clicks the "Translate to English" button
+// Add this new function after the imports
+async function getSelectionAsHTML(): Promise<{ html: string, body: string }> {
+    return Word.run(async (context) => {
+        const selection = context.document.getSelection();
+        const html = selection.getHtml();
+        await context.sync();
+        
+        // Extract the body content using regex
+        const bodyRegex = /<body[^>]*>([\s\S]*)<\/body>/i;
+        const match = html.value.match(bodyRegex);
+        const bodyContent = match ? match[1] : '';
+        
+        // Replace the body content with a placeholder
+        const modifiedHtml = html.value.replace(bodyRegex, '<body>BODYTOREPLACE</body>');
+        
+        return {
+            html: modifiedHtml,
+            body: bodyContent
+        };
+    });
+}
+
+// Modify the functions that use getOoxml
 export async function translateToEnglish() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
-        const selection = context.document.getSelection();
-        const ooxml = selection.getOoxml();
-        await context.sync();
-        const selectedText = ooxml.value;
-        await askLLMUrlPrompt(selectedText, false, '/prompts/translateToEnglish.txt', model);
+        const { html, body } = await getSelectionAsHTML();
+        await askLLMUrlPrompt(body, false, '/prompts/translateToEnglish.txt', model);
         await context.sync();
     });
 }
 
-// This function is called when the user clicks the "Translate to French" button
 export async function translateToFrench() {
     return Word.run(async (context) => {
         console.log("translate to english button clicked");
-        const selection = context.document.getSelection();
-        const ooxml = selection.getOoxml();
-        await context.sync();
-        const selectedText = ooxml.value;
-        await askLLMUrlPrompt(selectedText, false, '/prompts/translateToFrench.txt', model);
+        const { html, body } = await getSelectionAsHTML();
+        await askLLMUrlPrompt(body, false, '/prompts/translateToFrench.txt', model);
         await context.sync();
     });
 }
 
-// This function is called when the user clicks the "Enhance" button
 export async function enhance() {
     return Word.run(async (context) => {
         console.log("enhance button clicked");
-        const selection = context.document.getSelection();
-        const ooxml = selection.getOoxml();
-        await context.sync();
-        const selectedText = ooxml.value;
-        await askLLMUrlPrompt(selectedText, false, '/prompts/enhance.txt', model);
+        const { html, body } = await getSelectionAsHTML();
+        await askLLMUrlPrompt(body, false, '/prompts/enhance.txt', model);
         await context.sync();
     });
 }
 
-// This function is called when the user clicks the "Correct Spelling" button
 export async function correctSpelling() {
     return Word.run(async (context) => {
         console.log("correct spelling button clicked");
-        const selection = context.document.getSelection();
-        const ooxml = selection.getOoxml();
-        await context.sync();
-        const selectedText = ooxml.value;
-        await askLLMUrlPrompt(selectedText, false, '/prompts/correctSpelling.txt', model);
+        const { html, body } = await getSelectionAsHTML();
+        await askLLMUrlPrompt(body, false, '/prompts/correctSpelling.txt', model);
         await context.sync();
     });
 }
@@ -261,11 +269,8 @@ async function executeReplaceSelection() {
     if (!prompt) return;
 
     return Word.run(async (context) => {
-        const selection = context.document.getSelection();
-        const ooxml = selection.getOoxml();
-        await context.sync();
-        const selectedText = ooxml.value;
-        await askLLMStrPrompt(selectedText, false, prompt, model);
+        const { html, body } = await getSelectionAsHTML();
+        await askLLMStrPrompt(body, false, prompt, model);
         await context.sync();
     });
 }

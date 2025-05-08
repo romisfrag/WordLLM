@@ -2,47 +2,6 @@ import { getLLMResponse } from "./llm";
 import { marked } from 'marked';
 import { ChatOpenAI } from "@langchain/openai";
 
-// Function to convert markdown to Word formatting
-async function convertMarkdownToWordFormatting(context: Word.RequestContext, markdownText: string) {
-    const lines = markdownText.split('\n');
-    const selection = context.document.getSelection();
-    
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        
-        // Handle headings
-        if (line.startsWith('# ')) {
-            const paragraph = selection.insertParagraph(line.substring(2), Word.InsertLocation.before);
-            paragraph.style = "Heading 1";
-            await context.sync();
-        } else if (line.startsWith('## ')) {
-            const paragraph = selection.insertParagraph(line.substring(3), Word.InsertLocation.before);
-            paragraph.style = "Heading 2";
-            await context.sync();
-        } else if (line.startsWith('### ')) {
-            const paragraph = selection.insertParagraph(line.substring(4), Word.InsertLocation.before);
-            paragraph.style = "Heading 3";
-            await context.sync();
-        } else if (line.startsWith('#### ')) {
-            const paragraph = selection.insertParagraph(line.substring(5), Word.InsertLocation.before);
-            paragraph.style = "Heading 4";
-            await context.sync();
-        } else if (line.startsWith('##### ')) {
-            const paragraph = selection.insertParagraph(line.substring(6), Word.InsertLocation.before);
-            paragraph.style = "Heading 5";
-            await context.sync();
-        } else if (line.startsWith('###### ')) {
-            const paragraph = selection.insertParagraph(line.substring(7), Word.InsertLocation.before);
-            paragraph.style = "Heading 6";
-            await context.sync();
-        } else {
-            // Handle normal paragraphs
-            const paragraph = selection.insertParagraph(line, Word.InsertLocation.before);
-            paragraph.style = "Normal";
-            await context.sync();
-        }
-    }
-}
 
 async function concatenatePrompt(promptUrl: string, selectedText: string) {
   if (promptUrl === "") {
@@ -87,25 +46,33 @@ export async function askLLM(prompt: string, taskPane: boolean = false, model: C
 
             // Display the response in the taskpane
             if (taskPane) {
-              const responseDiv = document.getElementById('response');
-              if (responseDiv) {
-                  const parsedMarkdown = await marked.parse(llmResponse);
-                  console.log('Displaying response in taskpane : \n ' + parsedMarkdown);
-                  responseDiv.innerHTML = `<div class="markdown-content">${parsedMarkdown}</div>`;
-                  
-                  // Scroll to the response section
-                  const responseSection = document.querySelector('.response-section');
-                  if (responseSection) {
-                      responseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-              }
+                const responseDiv = document.getElementById('response');
+                if (responseDiv) {
+                    const parsedMarkdown = await marked.parse(llmResponse);
+                    console.log('Displaying response in taskpane : \n ' + parsedMarkdown);
+                    responseDiv.innerHTML = `<div class="markdown-content">${parsedMarkdown}</div>`;
+                    
+                    // Scroll to the response section
+                    const responseSection = document.querySelector('.response-section');
+                    if (responseSection) {
+                        responseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             } else {
-              // Clear the selection first
-              const selection = context.document.getSelection();
-              selection.clear();
-              
-              // Convert markdown to Word formatting
-              await convertMarkdownToWordFormatting(context, llmResponse);
+                // Get the current selection's HTML
+                const selection = context.document.getSelection();
+                const html = selection.getHtml();
+                await context.sync();
+                
+                // Replace the body content with the LLM response
+                const bodyRegex = /<body[^>]*>([\s\S]*)<\/body>/i;
+                const modifiedHtml = html.value.replace(bodyRegex, `<body>${llmResponse}</body>`);
+                
+                // Clear the selection first
+                selection.clear();
+                
+                // Insert the modified HTML
+                selection.insertHtml(modifiedHtml, Word.InsertLocation.replace);
             }
 
             await context.sync();

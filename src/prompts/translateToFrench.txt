@@ -1,1 +1,1 @@
-Translate in french the following text accurately and return only the translation, without adding any explanation or extra content:
+Translate in french the following HTML document accurately. I insist, please do not add any extra content or it will break the HTML document where I will insert the response:
